@@ -1,0 +1,42 @@
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+}
+
+//ext {
+//	coveragePass = 0.9
+//}
+
+apply plugin: 'jacoco'
+
+test.finalizedBy jacocoTestReport // report is always generated after tests run
+// to run coverage verification during the build (and fail when appropriate)
+check.dependsOn jacocoTestCoverageVerification
+
+jacoco {
+	toolVersion = "0.8.5"
+//	reportsDir = file("$buildDir/customJacocoReportDir") // $buildDir/reports/jacoco
+}
+
+jacocoTestReport {
+	dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.enabled false
+		csv.enabled false
+		html.enabled true
+		html.destination file("${buildDir}/jacocoHtml")
+	}
+}
+
+jacocoTestCoverageVerification {
+	violationRules {
+		rule {
+			limit {
+				counter = 'LINE'
+				value = 'COVEREDRATIO'
+				minimum = coveragePass
+			}
+		}
+	}
+}
